@@ -1,0 +1,11 @@
+#!/bin/bash
+cd ~/private/projects/web/node/_webchat
+clear
+printf "\n\n\t\tAbout to build Netlify app\n\n"
+sleep 10
+npm run build
+clear
+printf "\n\n\t\tAbout to run the Netlify server\n\n"
+sleep 14
+clear
+npm start

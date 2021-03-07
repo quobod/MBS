@@ -1,0 +1,44 @@
+#!/bin/bash
+
+clearVars() {
+    unset HOST USER
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+synopsis() {
+    color -P "\t\tProgram: vwshrs --> View Shares\n`color -w "Displays the shared resources on given host"`"
+    color -w "Synopsis: `color -o "vwshrs <Hostname_Or_IP_Address> <User_Name>"`"
+}
+
+usage() {
+    color -w "Usage: `color -o "vwshr <HostnameOrIP> <UserName>"`"
+}
+
+# smbclient -L $HOST -U $USER
+trap "gracefulExit" INT TERM PWR QUIT KILL STOP
+
+case $# in
+    0)
+        synopsis
+    ;;
+    
+    2)
+        HOST=$1
+        USER=$2
+        smbclient -L $HOST -U $USER
+        if [[ $? != 0 ]];
+        then
+            usage
+        else
+            gracefulExit
+        fi
+    ;;
+    
+    *)
+        usage
+    ;;
+esac

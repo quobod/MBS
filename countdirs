@@ -1,0 +1,63 @@
+#!/bin/bash
+clear_vars() {
+ unset DIR_PATH $1
+}
+
+gracefulExit() {
+ clear_vars
+ exit 0
+}
+
+missing_param() {
+ red "Error: " `white "Missing Parameter\n"`
+ print_usage
+ clear_vars
+ exit 121
+}
+
+too_many_params() {
+ red "Error: " `white "Too Many Parameters\n"`
+ print_usage
+ clear_vars
+ exit 120
+}
+
+print_usage() {
+ green "Usage: " `cyan "countdirs <path>"`
+ gracefulExit
+}
+
+count_directories() {
+ results=$(find $DIR_PATH -maxdepth 1 -type d | sed -n '$=')
+ if [[ $results -gt 0 ]];
+ then
+     yellow "Directory '${DIR_PATH}' directory count: $results"
+     gracefulExit
+ else
+     yellow "0\n"
+ fi
+}
+
+trap "gracefulExit" INT TERM QUIT PWR STOP KILL
+
+if [[ $# -gt 1 ]];
+then
+    too_many_params
+elif [[ $# -lt 1 ]] || [[ $1 == $str ]];
+then
+    missing_param
+elif [[ -f $1 ]];
+then
+    red "Error: " `white "${1} is a file"`
+    gracefulExit
+elif [[ -d $1 ]] && [[ ! -r $1 ]];
+then
+    red "Error: " `white "Cannot read '${1}' contents"`
+    gracefulExit
+elif [[ -d $1 ]] && [[ -r $1 ]];
+then
+    DIR_PATH=$1
+    count_directories
+else
+    red "Error: " `white "${1} does not exist"`
+fi

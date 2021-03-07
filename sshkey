@@ -1,0 +1,31 @@
+#!/bin/bash
+clearVars() {
+ unset var1
+}
+
+gracefulExit() {
+ clearVars
+ exit 0
+}
+
+notfound() {
+ printf "\n\tError: No such file or directory\n\n"
+ exit 122
+}
+
+start() {
+ ls ~/.ssh/id_rsa*
+ if [[ $? == 0 ]];
+ then
+     gracefulExit
+ else
+    notfound
+ fi
+}
+
+trap "gracefulExit" INT TERM QUIT PWR
+start
+
+
+
+

@@ -1,0 +1,50 @@
+#!/bin/bash
+declare -A ITEMS
+
+clearVars() {
+    unset ITEMS ITEM ITEMS_COUNT
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+trap "gracefulExit" INT PWR STOP KILL TERM QUIT
+
+while getopts ':hvc:g:' OPTION; do
+    case $OPTION in
+        h)
+        ;;
+        
+        v)
+            for I in ${!ITEMS[@]}
+            do
+                printf '%s: %s\n' "${I}","${ITEMS[$I]}"
+            done
+        ;;
+        
+        c)
+            if [[ $# -gt 0 ]];
+            then
+                for A in $@
+                do
+                    ITEM="${OPTARG}"
+                    # printf 'collecting %s\n' "${ITEM}"
+                    ITEMS_COUNT=${#ITEMS[@]}
+                    NEW_KEY="item-$((ITEMS_COUNT+=1))"
+                    ITEMS[$NEW_KEY]=$ITEM
+                done
+            fi
+        ;;
+        
+        g)
+        ;;
+        
+        :)
+        ;;
+        
+        \?)
+        ;;
+    esac
+done

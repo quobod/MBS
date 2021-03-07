@@ -1,0 +1,72 @@
+#!/bin/bash
+clear_vars() {
+    unset NUM
+}
+
+gracefulExit() {
+    clear_vars
+    exit 0
+}
+
+usage() {
+    color -w "Usage: cube [c <1-255>] <integer>"
+}
+
+synopsis() {
+    NAME="cube"
+    color -o "\t${NAME^^}"
+    color -x 110 "Synopsis `color -w ": cube [h?] or cube [c <Number_1_through_255>] <number>"`"
+    color -w "A Bash script that cubes the given integer. Takes an optional c parameter with a number argument from 1 through 255 to color the output."
+    color -x 116 "Options:"
+    color -w "\tc: Takes one number argument. 1-255 RGB colors.\n\t?: Displays this synopsis\n\th: Displays usage example"
+}
+
+trap 'gracefulExit' INT TERM PWR QUIT STOP
+
+while getopts ':hc:' OPTION; do
+    case "$OPTION" in
+        c)
+            if [[ ${OPTARG} -ge 1 ]] && [[ ${OPTARG} -le 255 ]];
+            then
+                if [[ $# -ge 3 ]];
+                then
+                    shift 2
+                    for NUM in $@
+                    do
+                        color -x ${OPTARG} $(($NUM*$NUM*$NUM))
+                    done
+                fi
+            fi
+            gracefulExit
+        ;;
+        
+        \?)
+            synopsis
+            gracefulExit
+        ;;
+        
+        h)
+            usage
+            gracefulExit
+        ;;
+        
+        :)
+            usage
+            gracefulExit
+        ;;
+        
+        *)
+            usage
+            gracefulExit
+        ;;
+    esac
+done
+shift "$(($OPTIND -1))"
+
+if [[ $# -gt 0 ]];
+then
+    for NUM in $@
+    do
+        printf '%i\n' "$(($NUM*$NUM*$NUM))"
+    done
+fi

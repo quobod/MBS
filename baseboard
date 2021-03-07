@@ -1,0 +1,31 @@
+#! /usr/bin/bash
+ROOT_UID=0
+NOT_ROOT=121
+
+gracefulExit() {
+ unset $@
+ exit 0
+}
+
+start() {
+ dmidecode -t baseboard
+ gracefulExit
+}
+
+usage() {
+ green "Usage: "`white "baseboard\n"`
+ exit 0
+}
+
+trap "gracefulExit" INT TERM QUIT STOP KILL
+
+if [[ $1 == "h" ]] || [[ $1 == "?" ]];
+then
+    usage
+elif [[ ${UID} -ne ${ROOT_UID} ]];
+then
+    red "Error: "`white "Must run this script with root level privilege\n\n"`
+else
+    start
+fi
+

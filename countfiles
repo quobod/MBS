@@ -1,0 +1,59 @@
+#!/bin/bash
+clear_vars() {
+ unset DIR_PATH $1
+}
+
+graceful_exit() {
+ clear_vars
+ exit 0
+}
+
+missing_param() {
+ red "\nError: " `white "Missing Parameter"`
+ usage
+ clear_vars
+ exit 121
+}
+
+too_many_params() {
+ red "\nError: " `white "Too Many Parameters"`
+ usage
+ clear_vars
+ exit 120
+}
+
+usage() {
+ green "Usage: " `cyan "countfiles <directory-path>"`
+}
+
+count_files() {
+ if [ -d ${DIR_PATH} ] && [ -r ${DIR_PATH} ];
+ then
+    result=`find -L ${DIR_PATH} -maxdepth 1 -type f | sed -n '$='`
+    if [[ $result != $str ]];
+    then
+        cyan "Directory '${DIR_PATH}' file count: ${result}"
+        graceful_exit
+    fi
+ elif [ -f ${DIR_PATH} ];
+ then
+    red "Error: " `white "${DIR_PATH} is a file"`
+    graceful_exit
+ else
+    red "Error: " `white "${DIR_PATH} does not exist"`
+    graceful_exit
+ fi
+}
+
+trap exit 0 INT TERM QUIT PWR KILL STOP
+
+if [[ $# -gt 1 ]];
+then
+    too_many_params
+elif [[ $# -lt 1 ]] || [[ $1 == $str ]];
+then
+    missing_param
+else
+    DIR_PATH=$1
+    count_files
+fi

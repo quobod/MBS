@@ -1,0 +1,170 @@
+#!/bin/bash
+declare -A scripts
+declare -a params
+
+cleanUp() {
+    rm -f script-list.txt
+}
+
+clearVars() {
+    unset S reg count v g UI username CHOICE
+    CHOICE=""
+    username=""
+    UI=""
+    g=0
+    v=0
+    S=""
+    reg="^[a-z]+$"
+    count=0
+    cleanUp
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+clearParams() {
+    for index in "${params[@]}"
+    do
+        unset ${params[$index]}
+    done
+}
+
+clearList() {
+    for S in ${!scripts[@]}
+    do
+        unset "${scripts[$S]]}"
+    done
+    count=0
+    S=""
+}
+
+createList() {
+    clearList
+    clearParams
+    sleep 2
+    reg="^[a-z]+$"
+    count=0
+    for S in `ls /home/quobod/bin`
+    do
+        if [[ $S =~ $reg ]];
+        then
+            count=$((count+=1))
+            # printf ' %s\n' "${S}"
+            scripts["script-${count}"]="${S,,}"
+            echo "${count}. ${S}">>script-list.txt
+        fi
+    done
+    
+    if [[ $v -eq 0 ]];
+    then
+        displayList
+    fi
+}
+
+displayList() {
+    column script-list.txt
+}
+
+greet() {
+    header="Welcome to my Program"
+    printf '\n***************************************************\n'
+    
+    printf '*\t\t%s \t\t  *\n' "${header}"
+    
+    printf '*\t  @Version   0.0.1 \t\t\t  *\n'
+    
+    printf '*\t  @Author    Rick Walker\t\t  *\n'
+    
+    printf '***************************************************\n'
+}
+
+optionChosen() {
+    printf '%s was chosen\n' "${UI}"
+}
+
+init() {
+    while [[ $UI != "exit" ]] && [[ $UI != "x" ]] && [[ $UI != "quit" ]] && [[ $UI != "q" ]]
+    do
+        clear
+        displayList
+        read -p "Choose by name or number  To exit type any of the following: exit, x, quit or q.  " UI
+        
+        if [[ $UI =~ [^(x|q)] ]];
+        then
+            optionChosen
+            break;
+        fi
+    done
+}
+
+getUserName() {
+    read -p "Enter a username: " username
+    if [[ $username == $str ]];
+    then
+        printf 'Going without a username\n'
+    else
+        printf 'Hello %s, Lets start\n' "$username"
+    fi
+}
+
+start() {
+    if [[ ${#params[@]} -gt 0 ]];
+    then        
+        for P in ${!params[@]}
+        do            
+            if [[ "${params[$P]}" == "v" ]];
+            then
+                v=0
+            elif [[ "${params[$P]}" == "g" ]];
+            then
+                g=0
+            fi
+        done
+    fi
+    
+    if [[ $g -eq 0 ]];
+    then
+        greet
+        createList
+        init
+    else
+        createList
+        init
+    fi
+    
+    # createList
+    # init
+}
+
+trap "gracefulExit" INT TERM QUIT PWR STOP KILL
+
+v=1
+g=1
+
+clearParams
+
+while getopts ':vg' OPTION; do
+    case ${OPTION,,} in
+        v)
+            params+="v"
+        ;;
+        
+        g)
+            params+="g"
+        ;;
+        
+        :)
+            continue
+        ;;
+        
+        *)
+            continue
+        ;;
+    esac
+done
+shift "$(($OPTIND -1))"
+
+start
+gracefulExit

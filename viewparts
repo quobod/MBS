@@ -1,0 +1,26 @@
+#!/bin/bash
+
+gracefulExit() {
+ exit 0
+}
+
+errorExit() {
+ red "Error: " `white "Unknown error occurred - Error Code: ${?}"`
+ exit 121
+}
+
+trap "graceful_exit" INT TERM QUIT PWR STOP KILL
+
+printf "\n"
+
+sed ''  /proc/partitions | egrep 'sda|sr0|major|minor|#|name'
+
+printf "\n"
+
+if [[ $? == 0 ]];
+then
+   gracefulExit
+else
+   errorExit
+fi
+

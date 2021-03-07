@@ -1,0 +1,41 @@
+#!/bin/bash
+
+clearVars() {
+ unset ARG $@
+}
+
+gracefulExit() {
+ clearVars
+ exit 0;
+}
+
+progError() {
+ red "\n\tError: " `white " Missing one or more arguments"`
+ usage
+ exit 121
+}
+
+usage() {
+ blue "\tUsage: " `white "toOct <integer>"`
+}
+
+trap "gracefulExit" INT TERM QUIT PWR
+
+if [[ $# -gt 1 ]];
+then
+   for ARG in $@
+   do
+     printf '%s\n' $(echo "obase=16; $ARG" | bc)
+   done
+else
+   case $# in
+      0)
+         progError
+      ;;
+
+      1)
+         #  magenta $(echo "obase=8; $1" | bc)"\n"
+         echo -e "\n\e[37;1m$(echo "obase=16; $1" | bc)\e[0m\n"
+      ;;
+   esac
+fi

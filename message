@@ -1,0 +1,35 @@
+#!/bin/bash
+DIALOG=${DIALOG=zenity}
+
+clearVars() {
+    unset $@
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+usage() {
+    color -w "Usage: `color -o "message <QuotedText>"`"
+}
+
+trap "gracefulExit" INT PWR QUIT TERM STOP
+
+case $# in
+    1)
+        $DIALOG --info \
+        --title "Attention" \
+        --width 217 \
+        --height 110 \
+        --text "${1}" \
+        --ellipsize \
+        --icon-name=emblem-shared
+        gracefulExit
+    ;;
+
+    *)
+        usage
+        gracefulExit
+    ;;
+esac

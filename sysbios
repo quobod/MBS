@@ -1,0 +1,31 @@
+#! /usr/bin/bash
+ROOT_UID=0
+NOT_ROOT=121
+
+gracefulExit() {
+ unset $@
+ exit 0
+}
+
+usage() {
+ green "Usage: " `white "sysbios\n"`
+ gracefulExit
+}
+
+start() {
+ dmidecode -t bios
+ gracefulExit
+}
+
+trap "gracefulExit" INT PWR STOP QUIT TERM
+
+if [[ $1 == "?" ]] || [[ $1 = "h" ]];
+then
+    usage
+elif [[ ${UID} -ne ${ROOT_UID} ]];
+then
+    red "Error: "`white "Must run this script with root privilege\n\n"`
+    exit $NOT_ROOT
+else
+    start
+fi

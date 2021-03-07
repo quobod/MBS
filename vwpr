@@ -1,0 +1,10 @@
+#!/bin/bash
+
+gracefulExit() {
+ exit 0
+}
+
+trap "graceful_exit" INT TERM QUIT PWR STOP KILL
+printf "\n"
+sed ''  /proc/partitions | egrep 'name|sda|sr0|major|minor|#' | awk '{print $1,"\t",$2,"\t",$3,"\t",$4;}'
+printf "\n"

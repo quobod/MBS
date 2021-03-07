@@ -1,0 +1,45 @@
+#!/bin/bash
+
+graceful_exit() {
+ unset contents LINE i MO DA DT HR MN SE AP
+ if [[ -e thisday ]];
+ then
+    rm -f thisday
+ fi
+ color -g "\nProgram Go Bye-Bye\n\n"
+}
+
+start() {
+clear
+date +'%B' > ./thisday
+date +'%A' >> ./thisday
+date +'%d' >> ./thisday
+
+contents[0]=null
+contents[1]=null
+contents[2]=null
+i=0
+
+while read LINE
+do
+     contents[$i]=$LINE
+     i=$i+1
+done<thisday
+
+MO=${contents[0]}
+DA=${contents[1]}
+DT=${contents[2]}
+HR=$(date +'%I')
+MN=$(date +'%M')
+SE=$(date +'%S')
+AP=$(date +'%p')
+YR=$(date +'%Y')
+
+color -o "\n$DA $MO $DT $YR  $HR:$MN:$SE $AP\n"
+
+rm thisday
+exit 0
+}
+
+trap "graceful_exit" INT TERM QUIT PWR
+start

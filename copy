@@ -1,0 +1,32 @@
+#!/bin/bash
+
+clearVars() {
+ unset SIZEMINUSONE LASTELEMENT SIZE i
+}
+
+gracefulExit() {
+ clearVars
+ exit 0
+}
+
+usage() {
+ green "Usage: " `xcolor "copy <ArgumentList> <DestinationDirectory>" 1 94`
+ exit 0
+}
+
+trap 'gracefulExit' INT TERM PWR QUIT STOP KILL
+
+if [[ $# -lt 1 ]];
+then
+    red "Error: " `white "Missing one or more arugments"`
+    usage
+else
+    SIZE=$(($# + 0))
+    SIZEMINUSONE=$(($SIZE - 1))
+    LASTELEMENT=${@:$((SIZE + 0))}
+    for i in ${@:1:$SIZEMINUSONE}
+    do
+        xcopy ${i} ${LASTELEMENT}
+    done
+    gracefulExit
+fi

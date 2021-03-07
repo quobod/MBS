@@ -1,0 +1,56 @@
+#!/bin/bash
+
+clear_vars() {
+ unset DIRE DIRES
+}
+
+graceful_exit() {
+ clear_vars
+ exit 0
+}
+
+missing_arg() {
+ red "\nError: " `white "Missing Argument\n"`
+ usage
+ exit 121
+}
+
+too_many_args() {
+ red "\nError: " `white "Too Many Arguments\n"`
+ usage
+ exit 120
+}
+
+usage() {
+ green "Usage: " `cyan "listdirs <path>\n"`
+}
+
+list_dir_dirs() {
+ for DIRE in `find $DIRES -mindepth 0 -type d`
+     do
+        if [[ $? -gt 0 ]];
+        then
+               green "${DIRE} is not a directory"
+        else
+               green " ${DIRE}"
+        fi
+     done
+ graceful_exit
+}
+
+if [[ $# -gt 1 ]];
+then
+    too_many_args
+elif [[ $# -lt 1 ]];
+then
+    missing_arg
+else
+    if [[ ! -d $1 ]] || [[ $1 == $str ]];
+    then
+        red "Error: " `white "Path does not exist: ${1}\n"`
+    elif [[ -d $1 ]];
+    then
+        DIRES=$1
+        list_dir_dirs
+    fi
+fi

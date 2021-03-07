@@ -1,0 +1,102 @@
+#!/bin/bash
+clearVars() {
+    unset ARG ARGS res
+}
+
+cleanUp() {
+    msg="all cleaned up!!"
+    magenta "\t\t${msg^^}\n\n"
+    
+}
+
+gracefulExit() {
+    clearVars
+    cleanUp
+    exit 0
+}
+
+exitProg() {
+    clearVars
+    exit 121
+}
+
+trap "gracefulExit" INT TERM QUIT STOP KILL
+
+while getopts ':?t:ab:c:o:' OPTION; do
+    case ${OPTION} in
+        b)
+            if [[ $# -lt 2 ]];
+            then
+                exitProg
+            else
+                # printf '\tSearch Term: %s\n' ${2^^}
+                res=$(cat ~/Documents/information/ChromePasswords.csv | awk "/$2/" | awk -F ',' '{print "URL:",$1," Username:",$3," Password:",$4;}')
+                if [[ $str != $res ]];
+                then
+                    printf '\tSearch Term: %s\n' ${2^^}
+                    printf '%s\n' "${res}"
+                fi
+            fi
+            # printf '\Argument: %s\n' $2
+        ;;
+        
+        a)
+            cat ~/Documents/information/ChromePasswords.csv | awk "/.*/" | awk -F ',' '{print "URL:", $1, " Domain:", $2, " Username:", $3, " Password:", $4;}'
+        ;;
+        
+        o)
+            if [[ $# -lt 2 ]];
+            then
+                exitProg
+            else
+                TERM=$2
+                # printf '\tSearch Term: %s\n' ${TERM^^}
+                res=$(cat ~/Documents/information/chrome_passwords.txt | awk "/${TERM}/" | awk '{gsub(/[ \t]/,",");print}' | awk -F ',' '{print "URL:",$1, " Username:",$3, " Password:", $4;}')
+                if [[ $str != $res ]];
+                then
+                    printf '\tSearch Term: %s\n' ${TERM^^}
+                    printf '%s\n' "${res}"
+                fi
+            fi
+        ;;
+        
+        c)
+            if [[ -f $2 ]] && [[ -r $2 ]] && [[ -e $2 ]];
+            then
+                awk "/.*/" $2 | awk -F ',' "/$3/" | awk '{print $0,"\n";}' | sed 's/\,/   /g'
+            else
+                exitProg
+            fi
+        ;;
+        
+        t)
+            if [[ $# -lt 2 ]];
+            then
+                exitProg
+            else
+                TERM=$2
+                # printf '\tSearch Term: %s\n' ${TERM^^}
+                res=$(cat ~/Documents/information/ChromePasswords.csv | awk "/${TERM}/" | awk -F ',' '{print "Username:",$3," Password:",$4;}')
+                if [[ $str != $res ]];
+                then
+                    printf '\tSearch Term: %s\n' ${TERM^^}
+                    printf '%s\n' "${res}"
+                fi
+            fi
+        ;;
+        
+        :)
+            exitProg
+        ;;
+        
+        \?)
+            gracefulExit
+        ;;
+    esac
+done
+shift "$(($OPTIND -1))"
+
+if [ $# -gt 0 ];
+then
+    unset $@
+fi

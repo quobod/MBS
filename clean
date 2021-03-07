@@ -1,0 +1,25 @@
+#!/bin/bash
+
+clearVars() {
+    unset $@
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+clean() {
+    rm -rf ans.txt answer.txt ans answer
+    sleep 3
+    clear
+}
+
+trap "gracefulExit" INT TERM QUIT PWR STOP KILL
+
+if [[ -e ans.txt ]] || [[ -e answer ]] || [[ -e ans ]] || [[ -e answer.txt ]];
+then
+    yellow "Status: "`white "Cleaning answer files"`
+    clean
+    gracefulExit
+fi

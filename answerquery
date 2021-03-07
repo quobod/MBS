@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# DIALOG=${DIALOG=gdialog}
+
+# $DIALOG --entry "${1}" text "${2}" entry-text 58 81 --clear
+#     case $? in
+#      0) echo "yes">question-answer.txt;;
+
+#      1) echo "no">question-answer.txt;;
+#     esac
+
+
+# zenity --forms --title="Add Friend" \
+# 	--text="Enter information about your friend." \
+# 	--separator="," \
+# 	--add-entry="First Name" \
+# 	--add-entry="Family Name" \
+# 	--add-entry="Email" \
+# 	--add-calendar="Birthday" >> addr.csv
+
+# case $? in
+#     0)
+#         echo "Friend added.";;
+#     1)
+#         echo "No friend added."
+# 	;;
+#     -1)
+#         echo "An unexpected error has occurred."
+# 	;;
+# esac
+
+#  params:
+#   $1 title
+#   $2 entry text
+#   $3 field text
+
+if [ $# -gt 0 ] && [ $# -lt 4 ];
+then
+    zenity --forms --title="${1}" \
+        --text="${2}" \
+        --separator="," \
+        --add-entry="${3}" >answerquery-answer.txt
+
+    case $? in
+        0)
+            echo "yes" >answerquery-answered.txt;;
+        1)
+            echo "no" >answerquery-answered.txt;;
+
+        -1)
+            echo "no" >answerquery-answered.txt;;
+esac
+fi

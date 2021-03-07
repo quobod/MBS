@@ -1,0 +1,56 @@
+#!/bin/bash
+
+DIALOG=${DIALOG=gdialog}
+
+clearVars() {
+ unset $@
+}
+
+removeTemp() {
+    rm ans.txt
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+safeExit() {
+    rm ans.txt
+    gracefulExit
+}
+
+usage() {
+ green "Usage: " `white "choice"`
+ gracefulExit
+}
+
+start() {
+    $DIALOG  --backtitle "Command Selection" \
+    --title "Command Selection" \
+    --clear \
+    --radiolist "Select a command to execute:" 40 70 2>ans.txt \
+        1 386SX off \
+        2 386DX off \
+        3 486SX off \
+        4 486DX off
+
+    # case $? in
+    #  0) echo "yes">ans.txt;;
+
+    #  1) echo "no">ans.txt;;
+    # esac
+    gracefulExit
+}
+
+trap "safeExit" INT PWR QUIT TERM
+
+if [[ $# -gt 0 ]];
+then
+    red "Error: " `white "Too many arguments"`
+    usage   
+else
+    start
+fi
+
+

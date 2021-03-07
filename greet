@@ -1,0 +1,55 @@
+#!/bin/bash
+
+clearVars() {
+ unset HR
+}
+
+gracefulExit() {
+ clearVars
+ exit 0
+}
+
+morning() {
+ clear
+ color -o "\n\t\t\tGood Morning ${USER^}\n\n\n"
+ gracefulExit
+}
+
+noon() {
+ clear
+ color -w "\n\t\t\tWent To Lunch At 12 ...Will Be Back At 1:00\n\n\n"
+ gracefulExit
+}
+
+afternoon() {
+ clear
+ color -o "\n\t\t\tGood Afternoon ${USER^}\n\n\n"
+ gracefulExit
+}
+
+night() {
+ clear
+ color -o "\n\t\t\tGood Evening ${USER^}\n\n\n"
+ gracefulExit
+}
+
+start() {
+ HR=$((date +%H) | bc)
+ MN=$((date +%M) | bc)
+
+ if [[ $HR -ge 0 ]] && [[ $HR -lt 12 ]];
+ then
+    morning
+ elif [[ $HR -eq 12 ]];
+ then
+    noon
+ elif [[ $HR -eq 12 ]] && [[ $MN -gt 0 ]] && [[ $HR -le 17 ]] || [[ $HR -gt 12 ]] && [[ $HR -le 17 ]];
+ then
+    afternoon
+ else
+    night
+ fi
+}
+
+trap "gracefulExit" INT TERM QUIT PWR
+start

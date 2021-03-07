@@ -1,0 +1,6 @@
+#!/bin/bash
+#c
+ls -Rlhs bin | nl
+exit 0
+
+

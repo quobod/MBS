@@ -1,0 +1,43 @@
+#!/bin/bash
+clearVars() {
+ unset FILE
+}
+
+gracefulExit() {
+ clearVars
+ exit 0
+}
+
+missing_param() {
+ red "\nError: " `white "Missing Parameter"`
+ printUsage
+ exit 121
+}
+
+printUsage() {
+ green "Usage: " `cyan "viewfile <FilePath>"`
+}
+
+viewFile() {
+ nl $FILE | sed -n '1,$p' | less
+ gracefulExit
+}
+
+trap "gracefulExit" INT TERM QUIT PWR
+
+if [ $# -lt 1 ];
+then
+    missing_param
+elif [ $# -gt 1 ];
+then
+    red "Error: " `white "This program accepts 1 argument"`
+    printUsage
+    gracefulExit
+elif [ ! -f $1 ];
+then
+    red "Error: " `white "${1} is not file or does not exist"`
+    gracefulExit
+else
+    FILE=$1
+    viewFile
+fi

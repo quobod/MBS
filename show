@@ -1,0 +1,37 @@
+#!/bin/bash
+
+gracefulExit() {
+ exit 0
+}
+
+missing() {
+ red "Error: " `white "Missing file path parameter"`
+ usage
+}
+
+usage() {
+ yellow "Usage: " `white "show <FilePath>"`
+ exit 0
+}
+
+trap "gracefulExit" INT TERM QUIT PWR STOP KILL
+
+if [[ $1 != $str ]] && [[ -e $1 ]];
+then
+   if [[ $# -gt 1 ]];
+   then
+      red "Error: " `white "Invalid argument"`
+      usage
+   elif [[ -f $1 ]];
+   then
+      sed -n 'p' ${1} | nl
+      gracefulExit
+
+   elif [[ -d $1 ]];
+   then
+      ls -shil $1
+      gracefulExit
+   fi
+else
+    missing
+fi

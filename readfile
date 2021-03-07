@@ -1,0 +1,43 @@
+#!/bin/bash
+
+gracefulExit() {
+ exit 0
+}
+
+missing() {
+ red "Error: " `white "Missing parameter"`
+ usage
+}
+
+usage() {
+ green "Usage: " `cyan "readfile <Quoted-Text>"`
+ gracefulExit
+}
+
+trap "gracefulExit" INT TERM PWR QUIT
+
+if [ $# -gt 1 ];
+then
+    red "Error: " `cyan "This script accepts no more than one argument"`
+    usage
+    gracefulExit
+elif [ $# -lt 1 ];
+then
+    missing
+else
+    green "Script File Path: " `white "${0}"`
+    green "Shell's Process ID: " `white "${$}"`
+
+    if [ -f $1 ];
+    then
+        green "File " `cyan "$1"`
+        lines=`sed -n '$=' ${1}`
+        green "Lines: " `cyan "${lines}"`
+    elif [ -d $1 ];
+    then
+        green "Directory " `cyan "$1"`
+        files=`countfiles ${1}`
+        green "File Count: " `cyan "${files}"`
+    fi
+    gracefulExit
+fi

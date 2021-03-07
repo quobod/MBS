@@ -1,0 +1,59 @@
+#!/bin/bash
+
+clear_vars() {
+ unset $@
+}
+
+graceful_exit() {
+ clear_vars
+ exit 0
+}
+
+missing_argument_error() {
+ red "\nError: " `white "Missing Argument\n"`
+ usage
+ exit 121
+}
+
+too_many_arguments_error() {
+ red "\nError: " `white "Too Many Arguments\n"`
+ usage
+ exit 120
+}
+
+type_not_file_error() {
+ red "\nError:  " `white "expecting file path\n"`
+ usage
+ exit 119
+}
+
+count_lines() {
+ for file in $files
+   do 
+       if [ -f ${file} ] && [ -r ${file} ];
+       then
+          res=`sed -n '$=' $file`
+          cyan "File ${file} line count: ${res}"
+       elif [ -d ${file} ];
+       then
+          red "Error: " `white "${file} is a directory"`
+       else
+         red "Error: " `white "File does not exist: ${file}"`
+       fi
+   done
+ graceful_exit
+}
+
+usage() {
+ green "Usage: " `cyan "countlines <path-to-file>\n"`
+}
+
+trap "graceful_exit" INT TERM QUIT PWR KILL STOP
+
+if [[ $# -eq 0 ]];
+then
+    missing_argument_error
+else
+    files=$@
+    count_lines
+fi

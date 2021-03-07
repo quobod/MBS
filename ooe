@@ -1,0 +1,46 @@
+#!/bin/bash
+clearVars() {
+    unset N
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+odd() {
+    printf '%s\n' "${N} is odd"
+}
+
+even() {
+    printf '%s\n' "${N} is even"
+}
+
+synopsis() {
+    color -P "\t\tProgram ooe --> Odd Or Even"
+    color -w "Synopsis: `color -o "ooe <Number>"`"
+}
+
+trap "gracefulExit" INT TERM QUIT PWR STOP KILL
+
+if [[ $# -gt 0 ]];
+then
+    regexp="^[0-9]+$"
+    for N in $@
+    do
+        if [[ $N =~ $regexp ]];
+        then
+            if [[ $(($N%2)) -eq 0 ]];
+            then
+                even
+            else
+                odd
+            fi
+        else
+            printf '%s is not an integer\n' "${N^}"
+        fi
+    done
+    gracefulExit
+else
+    synopsis
+fi

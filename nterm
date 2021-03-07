@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Command Test:    gnome-terminal -x bash -c "ls bin; bash"
+
+gracefulExit() {
+ exit 0
+}
+
+usage() {
+ printf "\t`green "Usage: "` `xcolor "nterm <'Quoted;Commands;Separated;By;Semicolon'>" 1 94`\n"
+ printf "\t`xcolor "The command list can be surrounded with double quotes, single quotes or both." 0 97`\n"
+ printf "\t`xcolor "For detailed usage examples, call nterm examples." 0 97`\n\n"
+ gracefulExit
+}
+
+examples() {
+ printf "\n\t\t\t`blue "nterm "``xcolor "Usage Examples" 0 92`\n\n"
+ printf "\t`green "Example 1. "`\t`xcolor "nterm <'Command1;Command2;Command3'>" 0 97`\n"
+ printf "\t`purple "-------------------------------------------------------------"`\n"
+ printf "\t`green "Example 2. "`\t`xcolor 'nterm <"Command1;Command2;Command3">' 0 97`\n"
+ printf "\t`purple "-------------------------------------------------------------"`\n"
+ printf "\t`green "Example 3. "`\t`xcolor 'nterm <"' 0 97``xcolor "'Command1;Command2;Command3'" 0 97``xcolor '">' 0 97`\n"
+ printf "\t`purple "-------------------------------------------------------------"`\n"
+ printf "\t`green "Example 4. "`\t`xcolor "nterm <'" 0 97``xcolor '"Command1;Command2;Command3"' 0 97``xcolor "'>" 0 97`\n"
+ printf "\t`purple "-------------------------------------------------------------"`\n"
+ printf "\t`green "Example 5. "`\t`xcolor 'nterm <"' 0 97``xcolor "'Command1';'Command2';'Command3'" 0 97``xcolor '">' 0 97`\n"
+ printf "\t`purple "-------------------------------------------------------------"`\n"
+ printf "\t`green "Example 6. "`\t`xcolor "nterm <'" 0 97``xcolor '"Command1";"Command2";"Command3"' 0 97``xcolor "'>" 0 97`\n\n"
+}
+
+trap 'gracefulExit' INT TERM PWR QUIT STOP KILL
+
+if [[ $# -gt 1 ]];
+then
+    printf "\t`red "Error: "` `white "Invalid argument list"`\n"
+    usage
+elif [[ $# -lt 1 ]];
+then
+    printf "\t`red "Error: "` `white "Missing argument"`\n"
+    usage
+else
+    if [[ ${1} = "usage" ]];
+    then
+        usage
+    elif [[ ${1} = "examples" ]] || [[ ${1} = "example" ]];
+    then
+        examples
+    else
+        # gnome-terminal -x "bash" -c "${1};bash"
+        gnome-terminal -- sh -c "${1};bash"
+        clear
+        gracefulExit
+    fi
+fi
+

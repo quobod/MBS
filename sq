@@ -1,0 +1,59 @@
+#!/bin/bash
+
+clear_vars() {
+ unset NUM ARG
+}
+
+graceful_exit() {
+ clear_vars
+ exit 0
+}
+
+too_many_error() {
+ clear
+ printf "Error:\tToo many arguments passed.\n"
+ usage
+ exit 121
+}
+
+missing_error() {
+ clear
+ printf "Error:\tMissing argument.\n"
+ usage
+ exit 120
+}
+
+not_a_number() {
+ printf "Error: Argument is not a number: $ARG.\n"
+ usage
+ exit 119
+}
+
+usage() {
+ printf "Usage: sq <number_argument>\n\n"
+}
+
+execute() {
+ reg='^-?[0-9]+([.][0-9]+)?$'
+ if [[ ! $NUM =~ $reg ]];
+ then
+     ARG=$NUM
+     not_a_number
+ else
+     printf "`echo $(($NUM*$NUM))`\n"
+     graceful_exit
+ fi
+}
+
+trap 'graceful_exit' INT TERM PWR QUIT
+
+if [[ $# -gt 1 ]];
+then
+    too_many_error
+elif [[ $# -lt 1 ]];
+then
+    missing_error
+else
+    NUM=$1
+    execute
+fi

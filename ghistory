@@ -1,0 +1,55 @@
+#!/bin/bash
+clearVars() {
+ unset ARG ARGS
+}
+
+cleanUp() {
+ msg="all cleaned up!!"
+ magenta "\t\t${msg^^}\n\n"
+
+
+}
+
+gracefulExit() {
+ clearVars
+ cleanUp
+ exit 0
+}
+
+trap "gracefulExit" INT TERM QUIT STOP KILL EXIT
+
+while getopts ':sa' OPTION; do
+    case ${OPTION,,} in
+        s)
+            history | grep sed>~/Documents/reference/sed/_sed_recent_history.txt
+            ls -lhs ~/Documents/reference/sed/
+            continue
+        ;;
+
+        a)
+            history | grep awk>~/Documents/reference/awk/_awk_recent_history.txt
+            ls -lhs ~/Documents/reference/awk/
+            continue
+        ;;
+        
+        :)
+            continue
+        ;;
+
+        \?)
+            continue
+
+        ;;
+
+        *)
+            continue
+
+        ;;
+    esac
+done
+shift "$(($OPTIND -1))"
+
+if [ $# -gt 0 ];
+then
+    green "${@}"
+fi

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+clearVars() {
+    unset LASTARGUMENT SIZEMINUSONE SIZE i
+}
+
+gracefulExit() {
+    clearVars
+    exit 0
+}
+
+missing() {
+    red "Error: " `xcolor "Need at least one argument" 1 97`
+    exit 0
+}
+
+trap 'gracefulExit' INT TERM QUIT PWR STOP KILL
+
+if [[ $# -lt 1 ]];
+then
+    missing
+else
+    SIZE=$(($# + 0))
+    SIZEMINUSONE=$(($SIZE - 1))
+    LASTELEMENT=${@:$SIZE}
+    green "Argument Length: " `xcolor "${SIZE}" 1 96`
+    green "Last Argument: " `xcolor "${LASTELEMENT}" 1 96`
+    for i in ${@:1:$SIZEMINUSONE}
+    do
+        xcolor "${i}" 0 97
+    done
+fi
